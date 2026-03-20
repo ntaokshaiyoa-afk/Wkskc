@@ -2,7 +2,7 @@
   {
     "name": "siteA",
     "url": "https://www.meiwa.ed.jp/entering/classroom.r2.html",
-    "selector": ".content",
+    "selector": "body",
     "basicAuth": true
   }
 ]
