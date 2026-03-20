@@ -3,32 +3,30 @@ import fs from 'fs';
 
 const sites = JSON.parse(fs.readFileSync('sites.json'));
 
-const browser = await chromium.launch();
-const page = await browser.newPage();
-
 let changed = false;
 
 for (const site of sites) {
   console.log(`Checking: ${site.name}`);
 
-  // 🔐 ログイン処理
-  if (site.login) {
-    const user = process.env[`LOGIN_${site.name}_USER`];
-    const pass = process.env[`LOGIN_${site.name}_PASS`];
+  let context;
 
-    if (!user || !pass) {
-      console.log(`Skip login: ${site.name} (no credentials)`);
-      continue;
-    }
-
-    await page.goto(site.loginUrl);
-    await page.fill(site.usernameSelector, user);
-    await page.fill(site.passwordSelector, pass);
-    await page.click(site.submitSelector);
-    await page.waitForLoadState('networkidle');
+  // 🔐 Basic認証対応
+  if (site.basicAuth) {
+    context = await chromium.launch().then(browser =>
+      browser.newContext({
+        httpCredentials: {
+          username: process.env[`LOGIN_${site.name}_USER`],
+          password: process.env[`LOGIN_${site.name}_PASS`]
+        }
+      })
+    );
+  } else {
+    const browser = await chromium.launch();
+    context = await browser.newContext();
   }
 
-  // 🌐 本ページ取得
+  const page = await context.newPage();
+
   await page.goto(site.url, { waitUntil: 'networkidle' });
 
   const content = await page.locator(site.selector).innerText();
@@ -47,8 +45,8 @@ for (const site of sites) {
   } else {
     console.log(`NO CHANGE: ${site.name}`);
   }
-}
 
-await browser.close();
+  await context.close();
+}
 
 if (changed) process.exit(1);
