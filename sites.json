@@ -3,10 +3,6 @@
     "name": "siteA",
     "url": "https://www.meiwa.ed.jp/entering/classroom.r2.html",
     "selector": ".content",
-    "login": true,
-    "loginUrl": "https://www.meiwa.ed.jp/entering/classroom.r2.html",
-    "usernameSelector": "#user",
-    "passwordSelector": "#pass",
-    "submitSelector": "button[type=submit]"
+    "basicAuth": true
   }
 ]
