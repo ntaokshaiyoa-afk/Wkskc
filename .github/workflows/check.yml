@@ -7,6 +7,10 @@ on:
 
 permissions:
   contents: write
+
+env:
+  LOGIN_siteA_USER: ${{ secrets.LOGIN_siteA_USER }}
+  LOGIN_siteA_PASS: ${{ secrets.LOGIN_siteA_PASS }}
   
 jobs:
   check:
