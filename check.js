@@ -41,6 +41,7 @@ for (const site of sites) {
   if (prev !== content) {
     console.log(`CHANGED: ${site.name}`);
     fs.writeFileSync(file, content);
+    await page.screenshot({ path: 'debug.png' });
     changed = true;
   } else {
     console.log(`NO CHANGE: ${site.name}`);
