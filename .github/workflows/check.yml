@@ -1,0 +1,39 @@
+name: Wkskc
+
+on:
+  schedule:
+    - cron: "*/10 * * * *" # 10分ごと
+  workflow_dispatch: # 手動実行も可能
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps
+
+      - name: Run check
+        id: check
+        run: node check.js
+
+      # 差分あった場合だけ実行
+      - name: Commit updated state
+        if: failure()
+        run: |
+          git config user.name "github-actions"
+          git config user.email "actions@github.com"
+          git add prev.txt
+          git commit -m "update snapshot"
+          git push
