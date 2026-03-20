@@ -5,6 +5,9 @@ on:
     - cron: "*/10 * * * *" # 10分ごと
   workflow_dispatch: # 手動実行も可能
 
+permissions:
+  contents: write
+  
 jobs:
   check:
     runs-on: ubuntu-latest
