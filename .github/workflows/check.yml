@@ -14,9 +14,9 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Setup Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v5
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Install dependencies
         run: npm install
@@ -37,3 +37,14 @@ jobs:
           git add prev.txt
           git commit -m "update snapshot"
           git push
+
+      - name: Notify LINE
+        if: failure()
+        run: |
+          curl -X POST https://api.line.me/v2/bot/message/push \
+            -H "Authorization: Bearer ${{ secrets.LINE_CHANNEL_ACCESS_TOKEN }}" \
+            -H "Content-Type: application/json" \
+            -d '{
+              "to": "${{ secrets.LINE_USER_ID }}",
+              "messages":[{"type":"text","text":"サイト更新検知"}]
+            }'
